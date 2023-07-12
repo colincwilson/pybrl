@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 """
     PDF Utilities for Braille
 
@@ -40,11 +39,13 @@ from pdfminer.layout import LAParams
 from pdfminer.converter import PDFPageAggregator
 from pdfminer.layout import LTTextBox, LTTextLine, LTFigure
 
-if six.PY3:
+if 0 and six.PY3:
     from pdfminer import settings as MinerSettings
-    MinerSettings.STRICT = False;     # Resolves some PSTypeError exceptions which occur sometimes
+    MinerSettings.STRICT = False
+    # Resolves some PSTypeError exceptions which occur sometimes
 
-def parsePDF(filepath, password = None):
+
+def parsePDF(filepath, password=None):
     """ 
     Open and parse a PDF File which is located at filepath.
     Returns the analysis of each page (with layout)
@@ -54,7 +55,8 @@ def parsePDF(filepath, password = None):
 
     fp = open(filepath, 'rb')
     parser = PDFParser(fp)
-    document = PDFDocument(parser, password) if password else PDFDocument(parser)
+    document = PDFDocument(parser,
+                           password) if password else PDFDocument(parser)
 
     # Check if the document allows text extraction. If not, abort.
     if not document.is_extractable:
@@ -71,6 +73,7 @@ def parsePDF(filepath, password = None):
         analysis.append(device.get_result())
 
     return analysis
+
 
 def extractTextWithSimpleLayout(analyzed_data):
     """
@@ -100,16 +103,17 @@ def extractTextWithSimpleLayout(analyzed_data):
         data.append([])
         for group in page.groups:
             data[-1].append({
-                    'text': group.get_text().split("\n"),
-                    'layout': {
-                        'x0': group.x0,
-                        'x1': group.x1,
-                        'y0': group.y0,
-                        'y1': group.y1
-                    }
+                'text': group.get_text().split("\n"),
+                'layout': {
+                    'x0': group.x0,
+                    'x1': group.x1,
+                    'y0': group.y0,
+                    'y1': group.y1
+                }
             })
 
     return data
+
 
 def extractTextWithFullLayout(analyzed_data):
     """
@@ -140,17 +144,19 @@ def extractTextWithFullLayout(analyzed_data):
         for lt_obj in page:
             if isinstance(lt_obj, LTTextBox) or isinstance(lt_obj, LTTextLine):
                 data[-1].append({
-                        'type': 'text',                         # Might support more types (e.g. figures) in the future.
-                        'text': lt_obj.get_text().split("\n"),
-                        'layout': {
-                            'x0': lt_obj.x0,
-                            'x1': lt_obj.x1,
-                            'y0': lt_obj.y0,
-                            'y1': lt_obj.y1
-                        }
-                    })
+                    'type':
+                        'text',  # Might support more types (e.g. figures) in the future.
+                    'text': lt_obj.get_text().split("\n"),
+                    'layout': {
+                        'x0': lt_obj.x0,
+                        'x1': lt_obj.x1,
+                        'y0': lt_obj.y0,
+                        'y1': lt_obj.y1
+                    }
+                })
 
     return data
+
 
 def extractTextWithLayout(analyzed_data):
     """
